@@ -258,6 +258,7 @@ public:
     void setMemToReg(int MemtoReg){this->MemtoReg = MemtoReg;}
     void setJump(bool jump){this->jump = jump;}
 };
+
 MEM_WB mem_wb;
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
@@ -309,7 +310,7 @@ int main(){
     int size = I_MEM.size();
 
     for (int i = 0; i < size + 5 - 1; i++){
-    //    std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+       std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
        
        if(i == 0){
            fetch();
@@ -354,13 +355,17 @@ int main(){
        else if(i == ((size + 5 - 1) - 1)){
            writeBack();
        }
-        PC += 4;
-        // std::cout << "pc was modified to "; 
-        // printf("0x%x\n", PC);
+        if(i < I_MEM.size()){
+            PC += 4;
+            std::cout << "pc was modified to "; 
+            printf("0x%x\n", PC);
+        }
+            
+        
     }
 
-    // std::cout << "\nprogram terminated:" << std::endl;
-    // std::cout << "total execution time is " << (total_clock_cycles - 1) <<  " cycles" << std::endl << std::endl;
+    std::cout << "\nprogram terminated:" << std::endl;
+    std::cout << "total execution time is " << (total_clock_cycles - 1) <<  " cycles" << std::endl << std::endl;
 }
 
 //HELPER FUNCTION
