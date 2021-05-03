@@ -300,69 +300,78 @@ int main(){
         index += 4;
     }
 
-    //Testing single instruction through the pipeline:
-    // fetch();
-    // decode();
-    // execute();
-    // mem();
-    // writeBack();
+  
 
     int size = I_MEM.size();
-    for (int i = 0; i < size + 5 - 1; i++){
-       std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
-       
-       if(i == 0){
-           fetch();
-       }
-       else if(i == 1){
-           decode();
-           fetch();
-       }
-       else if(i == 2){
-           execute();
-           decode();
-           fetch();
-       }
-       else if(i == 3){
-           mem();
-           execute();
-           decode();
-           fetch();
-       }
-       else if(i >= 4 && (i < ((size + 5 - 1) - 4))){
-           writeBack();
-           mem();
-           execute();
-           decode();
-           fetch();
-       }  
-       else if(i == ((size + 5 - 1) - 4)){
-           writeBack();
-           mem();
-           execute();
-           decode();
-       }
-       else if(i == ((size + 5 - 1) - 3)){
-           writeBack();
-           mem();
-           execute();
-       }
-       else if(i == ((size + 5 - 1) - 2)){
-           writeBack();
-           mem();
-       }
-       else if(i == ((size + 5 - 1) - 1)){
-           writeBack();
-       }
-        if(i < I_MEM.size()){
-            PC += 4;
-            std::cout << "pc was modified to "; 
-            printf("0x%x\n", PC);
+    if(size == 1){
+        std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+        fetch();
+        PC += 4;
+        decode();
+        execute();
+        mem();
+        writeBack();
+        std::cout << "pc was modified to "; 
+        printf("0x%x\n", PC);
+    }
+    else if(size >= 5){
+        for (int i = 0; i < size + 5 - 1; i++){
+        std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+        
+        if(i == 0){
+            fetch();
+        }
+        else if(i == 1){
+            decode();
+            fetch();
+        }
+        else if(i == 2){
+            execute();
+            decode();
+            fetch();
+        }
+        else if(i == 3){
+            mem();
+            execute();
+            decode();
+            fetch();
+        }
+        else if(i >= 4 && (i < ((size + 5 - 1) - 4))){
+            writeBack();
+            mem();
+            execute();
+            decode();
+            fetch();
+        }  
+        else if(i == ((size + 5 - 1) - 4)){
+            writeBack();
+            mem();
+            execute();
+            decode();
+        }
+        else if(i == ((size + 5 - 1) - 3)){
+            writeBack();
+            mem();
+            execute();
+        }
+        else if(i == ((size + 5 - 1) - 2)){
+            writeBack();
+            mem();
+        }
+        else if(i == ((size + 5 - 1) - 1)){
+            writeBack();
+        }
+            if(i < I_MEM.size()){
+                PC += 4;
+                std::cout << "pc was modified to "; 
+                printf("0x%x\n", PC);
+            }
         }
     }
-
+ 
     std::cout << "\nprogram terminated:" << std::endl;
     std::cout << "total execution time is " << (total_clock_cycles - 1) <<  " cycles" << std::endl << std::endl;
+    
 }
 
 //HELPER FUNCTION
