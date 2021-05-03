@@ -308,7 +308,6 @@ int main(){
     // writeBack();
 
     int size = I_MEM.size();
-
     for (int i = 0; i < size + 5 - 1; i++){
        std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
        
@@ -360,8 +359,6 @@ int main(){
             std::cout << "pc was modified to "; 
             printf("0x%x\n", PC);
         }
-            
-        
     }
 
     std::cout << "\nprogram terminated:" << std::endl;
