@@ -8,7 +8,13 @@
 #include <bitset>
 #include <iomanip>
 
+#include "IF_ID.h"
+#include "ID_EX.h"
+#include "EX_MEM.h"
+#include "MEM_WB.h"
+
 // //HEADER PROTOTYPES:
+void hazardUnit(ID_EX dicoEsecut, EX_MEM memExe);
 int arithmetic(std::string function);
 std::string NOR(std::string value1, std::string value2);
 int binaryToDecimal(const std::string &binary);
@@ -31,6 +37,10 @@ bool MemWrite = false; //if true, Write to address input with values given
 int MemtoReg = 0;      //if false, value of reg write data comes from ALU, otherwise from data memory
 bool MemRead = false;
 bool jump = false;
+
+//HAZARD FLAGS
+bool dataHazard = false;
+bool controlHazard = false;
 
 //Other global variables
 int PC = 0;            //PC for program counter
@@ -81,185 +91,15 @@ std::string registersNames[32] = {"$zero","$at","$v0","$v1","$a0","$a1","$a2","$
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
-class IF_ID
-{
-private:
-   std::string instruction;
-   int next_pc;
-public:
-    IF_ID(){};
-    std::string getInstruction(){return instruction;}
-    int getNext_PC(){return next_pc;}
-    void setInstruction(std::string instruction){this->instruction = instruction;}
-    void setNext_PC(int next_pc){this->next_pc = next_pc;}
-    // void printPipeline(){
-    //     std::
-    // }
-};
+
 IF_ID if_id;
 
-class ID_EX
-{
-private:
-    //---------------Control Signals---------------//
-    //EXE
-    int RegDst;    
-    std::string InstType;;
-    int ALUSrc; 
-    //MEM
-    bool branch;
-    bool MemRead;
-    bool MemWrite;
-    //WB
-    bool RegWrite; 
-    int MemtoReg;     
-    bool jump;
-
-    int next_pc;
-    int rsVal;
-    int rtVal;
-    std::string signExtendedVal;
-    std::string funct;
-    std::string rsID;
-    std::string rtID;
-    std::string rdID;
-    
-public:
-    //Default Constructor
-    ID_EX(){};
-    //Getters
-    int getNext_pc(){return next_pc;}
-    int getRSVal(){return rsVal;}
-    int getRTVal(){return rtVal;}
-    std::string getFunct(){return funct;}
-    std::string getRSID(){return rsID;}
-    std::string getRTID(){return rtID;}
-    std::string getRDID(){return rdID;}
-    std::string getSignExtendedVal(){return signExtendedVal;}
-
-    //EX getters
-    int getRegDst(){return RegDst;}
-    std::string getInstType(){return InstType;}
-    int getALUSrc(){return ALUSrc;}
-    //MEM getters
-    bool getBranch(){return branch;}
-    bool getMemRead(){return MemRead;}
-    bool getMemWrite(){return MemWrite;}
-    //WB getters
-    bool getRegWrite(){return RegWrite;}
-    int getMemToReg(){return MemtoReg;}
-    bool getJump(){return jump;}
-
-    //Setters
-    void setNext_pc(int next_pc){ this->next_pc= next_pc;}
-    void setRSVal(int rsVal){this->rsVal = rsVal;}
-    void setRTVal(int rtVal){this-> rtVal = rtVal;}
-    void setFunct(std::string funct){this-> funct = funct;}
-    void setRSID(std::string rsID){this-> rsID = rsID;}
-    void setRTID(std::string rtID){this->rtID = rtID;}
-    void setRDID(std::string rdID){this->rdID = rdID;}
-    void setSignExtendedVal(std::string signExtendedVal){this->signExtendedVal = signExtendedVal;}
-
-    //EXE setters
-    void setRegDst(int RegDst){this->RegDst = RegDst;}
-    void setInstType(std::string InstType){this->InstType = InstType;}
-    void setALUSrc(int ALUSrc){this->ALUSrc = ALUSrc;}
-    //MEM setters
-    void setBranch(bool branch){this->branch = branch;}
-    void setMemRead(bool MemRead){this->MemRead = MemRead;}
-    void setMemWrite(bool MemWrite){this->MemWrite = MemWrite;}
-    //WB setters
-    void setRegWrite(bool RegWrite){this->RegWrite = RegWrite;}
-    void setMemToReg(int MemtoReg){this->MemtoReg = MemtoReg;}
-    void setJump(bool jump){this->jump = jump;}
-
-};
 ID_EX id_exe;
 
-class EX_MEM
-{
-private:
-    //---------------Control Signals---------------//
-    //MEM
-    bool branch;
-    bool MemRead;
-    bool MemWrite;
-    //WB
-    bool RegWrite; 
-    int MemtoReg;     
-    bool jump;
-
-    int sum;
-    int zero;
-    std::string ALUresult;
-    int rtVal;
-    int regDST;
-public:
-    //Default Constructor
-    EX_MEM(){};
-    //Getters
-    int getSum(){return sum;}
-    int getZero(){return zero;}
-    std::string getALUResult(){return ALUresult;}
-    int getRTVal(){return rtVal;}
-    int getRegDst(){return regDST;} //Gets register ID pipelined from execute stage.
-    //MEM getters
-    bool getBranch(){return branch;}
-    bool getMemRead(){return MemRead;}
-    bool getMemWrite(){return MemWrite;}
-    //WB getters
-    bool getRegWrite(){return RegWrite;}
-    int getMemToReg(){return MemtoReg;}
-    bool getJump(){return jump;}
-
-    //Setters
-    void setSum(int sum){ this->sum= sum;}
-    void setZero(int zero){this->zero = zero;}
-    void setALUResult(std::string ALUresult){this-> ALUresult = ALUresult;}
-    void setRTVal(int rtVal){this->rtVal = rtVal;}
-    void setRegDst(int regDST){this-> regDST = regDST;} //Sets register ID to be pipelined according to RegDst mux.
-    //MEM setters
-    void setBranch(bool branch){this->branch = branch;}
-    void setMemRead(bool MemRead){this->MemRead = MemRead;}
-    void setMemWrite(bool MemWrite){this->MemWrite = MemWrite;}
-    //WB setters
-    void setRegWrite(bool RegWrite){this->RegWrite = RegWrite;}
-    void setMemToReg(int MemtoReg){this->MemtoReg = MemtoReg;}
-    void setJump(bool jump){this->jump = jump;}
-};
 EX_MEM ex_mem;
 
-class MEM_WB{
-private:
-//---------------Control Signals---------------//
-    //WB
-    bool RegWrite; 
-    int MemtoReg;     
-    bool jump;
-
-    std::string ALUresult;
-    int readMemData;
-    int regDST;
-public:
-    MEM_WB(){}
-    std::string getALUResult(){return ALUresult;}
-    int getReadMemData(){return readMemData;}
-    int getRegDst(){return regDST;}
-    //WB getters
-    bool getRegWrite(){return RegWrite;}
-    int getMemToReg(){return MemtoReg;}
-    bool getJump(){return jump;}
-
-    void setALUResult(std::string ALUresult){this-> ALUresult = ALUresult;}
-    void setReadMemData(int readMemData){this-> readMemData = readMemData;}
-    void setRegDst(int regDST){this-> regDST = regDST;}
-    //WB setters
-    void setRegWrite(bool RegWrite){this->RegWrite = RegWrite;}
-    void setMemToReg(int MemtoReg){this->MemtoReg = MemtoReg;}
-    void setJump(bool jump){this->jump = jump;}
-};
-
 MEM_WB mem_wb;
+
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
@@ -300,19 +140,139 @@ int main(){
         index += 4;
     }
 
-  
-
     int size = I_MEM.size();
     if(size == 1){
         std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
         fetch();
         PC += 4;
-        decode();
-        execute();
-        mem();
-        writeBack();
         std::cout << "pc was modified to "; 
         printf("0x%x\n", PC);
+        std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+        decode();
+        std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+        execute();
+        std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+        mem();
+        std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+        writeBack();
+        
+    }
+    else if(size == 2){
+        for (int i = 0; i < size + 5 - 1; i++){
+            std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+            if(i == 0){
+                fetch();
+            }
+            else if(i == 1){
+                decode();
+                fetch();  
+            }
+            else if(i == 2){
+                execute();
+                decode();
+            }
+            else if(i == 3){
+                mem();
+                execute();
+            }
+            else if(i == 4){
+                writeBack();
+                mem();
+            }
+            else if(i == 5){
+               writeBack();
+            }
+            if(i < I_MEM.size()){
+                PC += 4;
+                std::cout << "pc was modified to "; 
+                printf("0x%x\n", PC);
+            }
+        } 
+    }
+    else if(size == 3){
+        for (int i = 0; i < size + 5 - 1; i++){
+            std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+            if(i == 0){
+                fetch();
+            }
+            else if(i == 1){
+                decode();
+                fetch();  
+            }
+            else if(i == 2){
+                execute();
+                decode();
+                fetch();
+            }
+            else if(i == 3){
+                mem();
+                execute();
+                decode();
+            }
+            else if(i == 4){
+                writeBack();
+                mem();
+                execute();
+            }
+            else if(i == 5){
+                writeBack();
+                mem();
+            }
+            else if(i == 6){
+                writeBack();
+            }
+            if(i < I_MEM.size()){
+                PC += 4;
+                std::cout << "pc was modified to "; 
+                printf("0x%x\n", PC);
+            }
+        } 
+    }
+    else if(size == 4){
+        for (int i = 0; i < size + 5 - 1; i++){
+            std::cout << "\ntotal_clock_cycles " << total_clock_cycles++ << " :\n";
+            if(i == 0){
+                fetch();
+            }
+            else if(i == 1){
+                decode();
+                fetch();     
+            }
+            else if(i == 2){
+               execute();
+               decode();
+               fetch();
+            }
+            else if(i == 3){
+               mem();
+               execute();
+               decode();
+               fetch();
+            }
+            else if(i == 4){
+                writeBack();
+                mem();
+                execute();
+                decode();
+            }
+            else if(i == 5){
+                writeBack();
+                mem();
+                execute();
+            }
+            else if(i == 6){
+               writeBack();
+               mem();
+            }
+            else if(i == 7){
+                writeBack();
+            }
+            if(i < I_MEM.size()){
+                PC += 4;
+                std::cout << "pc was modified to "; 
+                printf("0x%x\n", PC);
+            }
+        } 
     }
     else if(size >= 5){
         for (int i = 0; i < size + 5 - 1; i++){
@@ -494,6 +454,8 @@ void decode(){
     //std::cout << "id_exe.setRSID("<<rs<<")" << std::endl;
     id_exe.setFunct(funct);
     //std::cout << "id_exe.setFunct("<<funct<<")" << std::endl;
+    
+    hazardUnit(id_exe, ex_mem);
 
     //std::cout<< "----------Decode End----------\n";
     // total_clock_cycles++;
@@ -607,6 +569,7 @@ void mem(){
 
     //Accessing memory address provided by ALU result.
     memoryAddress = binaryToDecimal(ex_mem.getALUResult());
+
     if(ex_mem.getMemRead()){
         mem_wb.setReadMemData(d_mem[memoryAddress / 4]);
     }
@@ -642,6 +605,7 @@ void writeBack(){
     //std::cout << "@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#" << std::endl;
     //std::cout << "@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#" << std::endl;
     // total_clock_cycles++;
+    dataHazard = false;
 }
 
 void controlUnit(){
@@ -742,6 +706,40 @@ void controlUnit(){
     }
     //std::cout<< "----------Control Unit End----------\n";
 }
+
+void hazardUnit(ID_EX dicoEsecut, EX_MEM memExe){
+    //Load use data hazard
+    int decExeSource = binaryToDecimal(dicoEsecut.getRSID());
+    int decExeTemp = binaryToDecimal(dicoEsecut.getRTID());
+
+    int memExeDest = memExe.getRegDst();
+    int memExeTemp = memExe.getRTVal();
+
+    if(!dataHazard){
+
+        if(memExe.getRegWrite()){
+
+            if((decExeSource == memExeDest || decExeTemp == memExeDest) ||
+               (decExeSource == memExeTemp || decExeTemp == memExeTemp)){
+                dataHazard = true;
+                std::cout<<"Data Hazard Detected"<<std::endl;
+                //std::cout<<"source Register:\t"<<decExeSource<<std::endl;
+                //std::cout<<"temporary Register:\t"<<decExeTemp<<std::endl;
+            
+                //std::cout<<"Problems happen is the destination register in memExe (rt or rd)"<<std::endl;
+                //std::cout<<"Is one of the operation registers in ID_EX (rs or rt)"<<std::endl;
+
+                //std::cout<<"destination Register:\t"<<memExeDest<<std::endl;
+                //std::cout<<"temporary Register:\t"<<memExeTemp<<std::endl;
+            }
+        }
+    }
+    else{
+        std::cout<<"Data Hazard Detected (nop)" <<std::endl;
+        //total_clock_cycles++;
+    }
+}
+
 
 //Opcode and funct field together determine ALU Op
 void aluControl(){
