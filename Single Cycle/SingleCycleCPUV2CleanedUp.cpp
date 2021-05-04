@@ -9,17 +9,17 @@
 #include <iomanip>
 
 // //HEADER PROTOTYPES:
-int arithmetic(std::string function);
-std::string NOR(std::string value1, std::string value2);
+int arithmetic(std::string function); // 
+std::string NOR(std::string value1, std::string value2); //
 int binaryToDecimal(const std::string &binary);
-std::string registerID_2_registerName(std::string rID);
-void fetch();
-void decode();
-void execute();
-void mem();
-void controlUnit(std::string opcode, std::string funct);
-void aluControl(std::string InstType, std::string funct);
-void writeBack();
+std::string registerID_2_registerName(std::string rID); //
+void fetch(); //
+void decode(); //
+void execute(); //
+void mem(); //
+void controlUnit(std::string opcode, std::string funct); //
+void aluControl(std::string InstType, std::string funct); // 
+void writeBack(); //
 
 //GLOBAL VARIABLES FOR CONTROL SIGNALS.
 bool RegWrite = false; // IDK
@@ -199,10 +199,8 @@ void decode(){
 
     controlUnit(opcode, funct);
 
-    //Calculating Jump TA --> REVISIT
     std::string nextPCString = std::bitset<32>(next_pc).to_string().substr(0,4); //Taking the first four bits of next_pc
     jump_target = nextPCString + address + "00"; //Concatenating: first four bits of next_pc + 26 bits of SLL + 00
-    
     if(jump)
         PC = binaryToDecimal(jump_target); 
 }
