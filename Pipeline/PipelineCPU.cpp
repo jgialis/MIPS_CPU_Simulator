@@ -92,13 +92,10 @@ std::string registersNames[32] = {"$zero","$at","$v0","$v1","$a0","$a1","$a2","$
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 
-IF_ID if_id;
-
-ID_EX id_exe;
-
-EX_MEM ex_mem;
-
-MEM_WB mem_wb;
+    IF_ID if_id;
+    ID_EX id_exe;
+    EX_MEM ex_mem;
+    MEM_WB mem_wb;
 
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
 /////// CLASS DECLARATIONS TO BE MOVED LATER WHEN DEBUGGING IS FINISHED /////////////////
@@ -765,5 +762,3 @@ void aluControl(){
     //std::cout<< "ALU_Op: " << ALU_Op << "\n";
     //std::cout<< "----------aluControl end----------\n";
 }
-
-
