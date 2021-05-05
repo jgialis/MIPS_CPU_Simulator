@@ -1,9 +1,1 @@
-bool RegWrite = false; // IDK
-// int RegDst = 0;        //If 1 rd is destination register, If 0 rt is destination register
-// bool branch = false;
-// int ALUSrc = 0; //SELECTOR TO DETERMINE SIGN EXTEND OR READ FROM REG
-// std::string InstType = "";
-// bool MemWrite = false; //if true, Write to address input with values given
-// int MemtoReg = 0;      //if false, value of reg write data comes from ALU, otherwise from data memory
-// bool MemRead = false;
-// bool jump = false;
+L
